@@ -1,0 +1,28 @@
+{
+  "name": "solidity-coin-flip",
+  "version": "1.0.0",
+  "description": "Coin flip game smart contract with specified return rate for gamblers.",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/urtuba/solidity-coin-flip.git"
+  },
+  "keywords": [
+    "solidity",
+    "evm",
+    "coin-flip",
+    "gamble"
+  ],
+  "author": "urtuba (Samed Kahyaoglu)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/urtuba/solidity-coin-flip/issues"
+  },
+  "homepage": "https://github.com/urtuba/solidity-coin-flip#readme"
+}
