@@ -56,7 +56,7 @@ contract CoinFlip {
         bool result = _headsOrTails(_heads);
         if (result) {
             // win
-            if (address(this).balance < msg.value * returnRate) {
+            if (address(this).balance < msg.value * (returnRate / 100)) {
                 // user wins, but contract has not enough balance to cover
                 // give gamler all the money 
 
@@ -81,13 +81,13 @@ contract CoinFlip {
                     blockNumber: block.number,
                     heads: _heads,
                     win: true,
-                    winAmount: msg.value * returnRate,
-                    transferred: msg.value + msg.value * returnRate
+                    winAmount: msg.value * (returnRate / 100),
+                    transferred: msg.value + msg.value * (returnRate / 100)
                 });
 
-                emit resultInfo(betsCounter, "win", msg.value + msg.value * returnRate);
+                emit resultInfo(betsCounter, "win", msg.value + msg.value * (returnRate / 100));
 
-                payable(msg.sender).transfer(msg.value + msg.value * returnRate);
+                payable(msg.sender).transfer(msg.value + msg.value * (returnRate / 100));
             }
         } else {
             emit resultInfo(betsCounter, "lose", 0);
