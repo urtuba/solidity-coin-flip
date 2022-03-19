@@ -119,4 +119,12 @@ contract CoinFlip is Ownable, Pausable {
     function showFunds() public view onlyOwner returns (uint) {
         return address(this).balance;
     }
+
+    function pause() public onlyOwner {
+        _pause();
+    }
+    
+    function unpause() public onlyOwner {
+        _unpause();
+    }
 }
