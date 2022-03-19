@@ -9,11 +9,9 @@ contract CoinFlip is Ownable{
 
     function rand() public view returns (uint256) {
         uint256 seed = uint256(keccak256(abi.encodePacked(
-            block.timestamp +
             block.difficulty +
             ((uint256(keccak256(abi.encodePacked(block.coinbase)))) / (block.timestamp)) +
             block.gaslimit + 
-            ((uint256(keccak256(abi.encodePacked(msg.sender)))) / (block.timestamp)) +
             block.number
         )));
 
@@ -33,9 +31,9 @@ contract CoinFlip is Ownable{
     uint256 public maximumBet;
     uint256 public returnRate;
     uint256 public betsCounter;
-    mapping (uint => Bet) public bets;
+    Bet[] public bets;
     
-    constructor (uint _returnRate, uint _minimumBet, uint _maximumBet) {
+    constructor (uint _minimumBet, uint _maximumBet, uint _returnRate) {
         returnRate = _returnRate;
         minimumBet = _minimumBet;
         maximumBet = _maximumBet;
@@ -59,18 +57,22 @@ contract CoinFlip is Ownable{
         bool result = _headsOrTails(_heads);
         if (result) {
             // win
-            if (address(this).balance < msg.value * (returnRate / 100)) {
+            uint256 winAmount = msg.value * (returnRate / 100);
+            uint256 transferAmount = winAmount + msg.value;
+
+            if (address(this).balance < winAmount) {
                 // user wins, but contract has not enough balance to cover
                 // give gamler all the money 
 
-                bets[betsCounter++] = Bet({
+                betsCounter++;
+                bets.push(Bet({
                     addr: msg.sender,
                     blockNumber: block.number,
                     heads: _heads,
                     win: true,
-                    winAmount: address(this).balance,
+                    winAmount: winAmount,
                     transferred: address(this).balance
-                });
+                }));
 
                 emit resultInfo(betsCounter, "win", address(this).balance);
 
@@ -78,22 +80,42 @@ contract CoinFlip is Ownable{
             }
             else {
                 // user wins, contract has enough balance to cover
-
-                bets[betsCounter++] = Bet({
+                
+                betsCounter++;
+                bets.push(Bet({
                     addr: msg.sender,
                     blockNumber: block.number,
                     heads: _heads,
                     win: true,
-                    winAmount: msg.value * (returnRate / 100),
-                    transferred: msg.value + msg.value * (returnRate / 100)
-                });
+                    winAmount: winAmount,
+                    transferred: transferAmount
+                }));
 
-                emit resultInfo(betsCounter, "win", msg.value + msg.value * (returnRate / 100));
+                emit resultInfo(betsCounter, "win", transferAmount);
 
-                payable(msg.sender).transfer(msg.value + msg.value * (returnRate / 100));
+                payable(msg.sender).transfer(transferAmount);
             }
         } else {
+
+            betsCounter++;
+            bets.push(Bet({
+                addr: msg.sender,
+                blockNumber: block.number,
+                heads: _heads,
+                win: false,
+                winAmount: 0,
+                transferred: 0
+            }));
+
             emit resultInfo(betsCounter, "lose", 0);
         }
+    }
+
+    function insertFunds() public payable onlyOwner {
+        payable(address(this)).call{value: msg.value};
+    }
+
+    function showFunds() public view onlyOwner returns (uint) {
+        return address(this).balance;
     }
 }
