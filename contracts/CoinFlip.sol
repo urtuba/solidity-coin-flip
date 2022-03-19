@@ -3,8 +3,9 @@ pragma solidity ^0.8.12;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 
-contract CoinFlip is Ownable{
+contract CoinFlip is Ownable, Pausable {
     using SafeMath for uint256;
 
     function rand() public view returns (uint256) {
@@ -51,7 +52,7 @@ contract CoinFlip is Ownable{
         }
     }
 
-    function placeBet(bool _heads) public payable {
+    function placeBet(bool _heads) public payable whenNotPaused {
         require((msg.value >= minimumBet) && (msg.value <= maximumBet), "Bet amount must be between minimumBet and maximumBet");
 
         bool result = _headsOrTails(_heads);
