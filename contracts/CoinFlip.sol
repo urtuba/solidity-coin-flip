@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >= 0.4.22 < 0.9.0;
+pragma solidity ^0.8.12;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract CoinFlip {
+contract CoinFlip is Ownable{
     using SafeMath for uint256;
 
     function rand() public view returns (uint256) {
@@ -28,14 +29,16 @@ contract CoinFlip {
         uint256 transferred; // amount of wei transferred to gambler
     }
     
-    uint256 public cost;
+    uint256 public minimumBet;
+    uint256 public maximumBet;
     uint256 public returnRate;
     uint256 public betsCounter;
     mapping (uint => Bet) public bets;
     
-    constructor (uint _cost, uint _returnRate) {
-        cost = _cost;
+    constructor (uint _returnRate, uint _minimumBet, uint _maximumBet) {
         returnRate = _returnRate;
+        minimumBet = _minimumBet;
+        maximumBet = _maximumBet;
         betsCounter = 0;
     }
 
@@ -51,7 +54,7 @@ contract CoinFlip {
     }
 
     function placeBet(bool _heads) public payable {
-        require(msg.value == cost);
+        require((msg.value >= minimumBet) && (msg.value <= maximumBet), "Bet amount must be between minimumBet and maximumBet");
 
         bool result = _headsOrTails(_heads);
         if (result) {
