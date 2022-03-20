@@ -112,6 +112,15 @@ contract CoinFlip is Ownable, Pausable {
         }
     }
 
+    function didGamblerWin(address gambler) public view returns(bool) {
+        for (uint i=betsCounter.sub(1); i>0; i--) {
+            if (bets[i].addr == gambler) {
+                return bets[i].win;
+            }
+        }
+        return false;
+    }
+
     function insertFunds() public payable onlyOwner {
         payable(address(this)).call{value: msg.value};
     }
