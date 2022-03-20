@@ -3,8 +3,9 @@ const CoinFlip = artifacts.require("CoinFlip")
 contract("CoinFlip", (accounts) => {
   before(async () => {
     _contract = await CoinFlip.deployed()
-    console.log(accounts[0])
-    console.log(await _contract.owner())
+    // console.log(accounts[0])
+    // console.log(await _contract.owner())
+    return assert.isTrue(await _contract.owner() == accounts[0]);
   })
 
   it("Should be deployed", async () => {
@@ -20,9 +21,8 @@ contract("CoinFlip", (accounts) => {
   });
 
   it("Should be able to flip", async () => {
-    const bet = await _contract.placeBet(true, { value: web3.utils.toWei("0.2", "ether") })
-    
-    assert.isTrue(bet.logs[0].event == 'resultInfo')
+    const bet = await _contract.placeBet(true, { value: web3.utils.toWei("0.2", "ether") });
+    return assert.isTrue(bet.logs[0].event == 'resultInfo')
   })
 
   it("Should be able to flip multiple times", async () => {
@@ -35,7 +35,8 @@ contract("CoinFlip", (accounts) => {
     await _contract.placeBet(true, {value: amount, from: accounts[3]})
 
     betsCounter = await _contract.betsCounter.call()
-    expect(betsCounter.toString()).to.equal('3')
+    return assert.isTrue(betsCounter.toString() == '3');
+    // expect(betsCounter.toString()).to.equal('3')
   })
 
   it("Should be able to withdraw funds", async() => {
