@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
 contract CoinFlip is Ownable, Pausable {
-    using SafeMath for uint256;
 
     function rand() public view returns (uint256) {
         uint256 seed = uint256(keccak256(abi.encodePacked(
@@ -58,7 +56,7 @@ contract CoinFlip is Ownable, Pausable {
         bool result = _headsOrTails(_heads);
         if (result) {
             // win
-            uint256 winAmount = (msg.value).mul(returnRate).div(100);
+            uint256 winAmount = msg.value * returnRate / 100;
             uint256 transferAmount = winAmount + msg.value;
 
             if (address(this).balance < winAmount) {
@@ -121,7 +119,7 @@ contract CoinFlip is Ownable, Pausable {
     }
 
     function withdrawFunds(uint percentage) public onlyOwner {
-        uint256 amount = address(this).balance.mul(percentage).div(100);
+        uint256 amount = address(this).balance * percentage / 100;
         payable(address(owner())).transfer(amount);
     }
 
