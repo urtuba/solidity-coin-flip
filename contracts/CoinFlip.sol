@@ -58,7 +58,7 @@ contract CoinFlip is Ownable, Pausable {
         bool result = _headsOrTails(_heads);
         if (result) {
             // win
-            uint256 winAmount = msg.value * (returnRate / 100);
+            uint256 winAmount = (msg.value).mul(returnRate).div(100);
             uint256 transferAmount = winAmount + msg.value;
 
             if (address(this).balance < winAmount) {
