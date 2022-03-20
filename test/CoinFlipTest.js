@@ -43,7 +43,6 @@ contract("CoinFlip", (accounts) => {
     const initialFunds = Number((await _contract.showFunds()).toString())
     await _contract.withdrawFunds(50)
     const remainingFunds = Number((await _contract.showFunds()).toString())
-    
     expect(initialFunds).to.equal(remainingFunds * 2)
   })
 })
