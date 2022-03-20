@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.12;
 
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
 contract CoinFlip is Ownable, Pausable {
+    using SafeMath for uint256;
 
     function _rand() private view returns (uint256) {
         uint256 seed = uint256(keccak256(abi.encodePacked(
