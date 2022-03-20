@@ -138,4 +138,12 @@ contract CoinFlip is Ownable, Pausable {
     function unpause() public onlyOwner {
         _unpause();
     }
+
+    function setMinimumBet(uint _minimumBet) public onlyOwner {
+        minimumBet = _minimumBet;
+    } 
+
+    function setMaximumBet(uint _maximumBet) public onlyOwner {
+        maximumBet = _maximumBet;
+    }
 }
