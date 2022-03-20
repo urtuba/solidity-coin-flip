@@ -6,12 +6,13 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 
 contract CoinFlip is Ownable, Pausable {
 
-    function rand() public view returns (uint256) {
+    function _rand() private view returns (uint256) {
         uint256 seed = uint256(keccak256(abi.encodePacked(
             block.difficulty +
             ((uint256(keccak256(abi.encodePacked(block.coinbase)))) / (block.timestamp)) +
             block.gaslimit + 
-            block.number
+            block.number + 
+            (secureSeed[msg.sender] * betsCounter)
         )));
 
         return (seed - ((seed / 1000) * 1000));
@@ -26,11 +27,13 @@ contract CoinFlip is Ownable, Pausable {
         uint256 transferred; // amount of wei transferred to gambler
     }
     
+
     uint256 public minimumBet;
     uint256 public maximumBet;
     uint256 public returnRate;
     uint256 public betsCounter;
     Bet[] public bets;
+    mapping (address => uint256) secureSeed;
     
     constructor (uint _minimumBet, uint _maximumBet, uint _returnRate) {
         returnRate = _returnRate;
@@ -41,19 +44,24 @@ contract CoinFlip is Ownable, Pausable {
 
     event resultInfo(uint256 _id, string _result, uint256 _transferred);
 
-    function _headsOrTails(bool heads) private view returns (bool) {
-        uint256 r = rand();
+    function _headsOrTails(bool heads) private view returns (bool, uint) {
+        uint256 r = _rand();
         if (r < uint256(500)) {
-            return heads;
+            return (heads, r);
         } else {
-            return !heads;
+            return (!heads, r);
         }
     }
 
     function placeBet(bool _heads) public payable whenNotPaused {
         require((msg.value >= minimumBet) && (msg.value <= maximumBet), "Bet amount must be between minimumBet and maximumBet");
 
-        bool result = _headsOrTails(_heads);
+        bool result;
+        uint256 r;
+
+        (result, r) = _headsOrTails(_heads);
+        secureSeed[msg.sender] += r;
+
         if (result) {
             // win
             uint256 winAmount = msg.value * returnRate / 100;

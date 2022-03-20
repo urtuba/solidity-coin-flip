@@ -3,8 +3,6 @@ const CoinFlip = artifacts.require("CoinFlip")
 contract("CoinFlip", (accounts) => {
   before(async () => {
     _contract = await CoinFlip.deployed()
-    console.log(accounts[0])
-    console.log(await _contract.owner())
   })
 
   it("Should be deployed", async () => {
