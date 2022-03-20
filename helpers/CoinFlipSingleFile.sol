@@ -446,7 +446,7 @@ contract CoinFlip is Ownable, Pausable {
 
     function _headsOrTails(bool heads) private view returns (bool, uint) {
         uint256 r = _rand();
-        if (r < uint256(500)) {
+        if (r % 2 == 0) {
             return (heads, r);
         } else {
             return (!heads, r);
