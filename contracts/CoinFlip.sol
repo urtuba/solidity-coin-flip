@@ -120,6 +120,11 @@ contract CoinFlip is Ownable, Pausable {
         return address(this).balance;
     }
 
+    function withdrawFunds(uint percentage) public onlyOwner {
+        uint256 amount = address(this).balance.mul(percentage).div(100);
+        payable(address(owner())).transfer(amount);
+    }
+
     function pause() public onlyOwner {
         _pause();
     }
